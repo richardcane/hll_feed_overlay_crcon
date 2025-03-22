@@ -1,0 +1,79 @@
+body {
+    font-family: monospace;
+    background-color: #111;
+    color: #eee;
+    padding: 20px;
+}
+
+.filter-label {
+    margin-bottom: 10px;
+    padding: 6px 12px;
+    display: inline-block;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: white;
+}
+
+.filter-label.axis {
+    background-color: red;
+}
+
+.filter-label.allies {
+    background-color: blue;
+}
+
+#kill-feed {
+    list-style: none;
+    padding: 0;
+}
+
+#kill-feed li {
+    background: #222;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-left: 4px solid #444;
+    opacity: 1;
+    transition: opacity 3s ease-in-out;
+}
+
+.kill-axis {
+    border-left-color: red;
+    color: #ffaaaa;
+}
+
+.kill-allies {
+    border-left-color: blue;
+    color: #aaaaff;
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+
+.kill-entry {
+    background: #222;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-left: 4px solid #444;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+    display: flex;
+    gap: 8px;
+}
+
+.player-axis {
+    color: #ff5c5c;
+    font-weight: bold;
+}
+
+.player-allies {
+    color: #5c8bff;
+    font-weight: bold;
+}
+
+.weapon {
+    color: #aaa;
+    font-style: italic;
+}

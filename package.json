@@ -1,0 +1,29 @@
+{
+  "name": "crcon_kill_feed",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "app": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sbosvk/crcon_kill_feed.git"
+  },
+  "keywords": [
+    "HLL",
+    "CRCON",
+    "Streaming"
+  ],
+  "author": "Oliver Krilov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sbosvk/crcon_kill_feed/issues"
+  },
+  "homepage": "https://github.com/Sbosvk/crcon_kill_feed#readme",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "ws": "^8.18.1"
+  }
+}
