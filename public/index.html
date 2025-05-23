@@ -1,105 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Live Kill Feed</title>
-        <link rel="stylesheet" href="styles.css" />
-    </head>
-    <body>
-        <h1>🎥 Live Kill Feed</h1>
-        <div id="team-filter-label" class="filter-label"></div>
-        <ul id="kill-feed"></ul>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Live Kill Feed</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <ul id="kill-feed"></ul>
 
-        <script>
-            let teamFilter = null;
+    <script>
+      function extractPlayerTeams(message) {
+        const [player1, player2] = message.split(" -> ");
 
-            fetch("/filters.json")
-                .then((res) => res.json())
-                .then((f) => {
-                    const label = document.getElementById("team-filter-label");
+        return {
+          killerTeam: player1.match(/\((Allies|Axis)\//)[1],
+          victimTeam: player2.match(/\((Allies|Axis)\//)[1],
+        };
+      }
 
-                    if (f.showAxis) {
-                        teamFilter = "Axis";
-                        label.textContent = "🔴 Team Filter: Axis";
-                        label.classList.add("axis");
-                    }
+      const ws = new WebSocket(`ws://${location.host}`);
+      ws.onmessage = (msg) => {
+        const { type, payload } = JSON.parse(msg.data);
+        if (type !== "KILL") return;
 
-                    if (f.showAllies) {
-                        teamFilter = "Allies";
-                        label.textContent = "🔵 Team Filter: Allies";
-                        label.classList.add("allies");
-                    }
+        const info = extractPlayerTeams(payload.message);
 
-                    if (!f.showAxis && !f.showAllies) {
-                        label.textContent = "⚪ No Team Filter";
-                        label.style.opacity = "0.5";
-                    }
-                });
+        const entry = document.createElement("li");
+        entry.classList.add("kill-entry");
 
-            function extractTeamsFromMessage(message) {
-                const regex = /(.+)\((Axis|Allies)\/[0-9]+\) -> (.+)\((Axis|Allies)\/[0-9]+\)/;
-                const match = message.match(regex);
+        const killerSpan = document.createElement("span");
+        killerSpan.textContent = payload.player_name_1;
+        killerSpan.classList.add(
+          info.killerTeam === "Axis" ? "player-axis" : "player-allies"
+        );
 
-                if (match) {
-                    return {
-                        killerName: match[1].trim(),
-                        killerTeam: match[2],
-                        victimName: match[3].trim(),
-                        victimTeam: match[4],
-                    };
-                }
+        const arrowSpan = document.createElement("span");
+        arrowSpan.textContent = "→";
 
-                // fallback
-                return {
-                    killerTeam: null,
-                    victimTeam: null,
-                };
-            }
+        const victimSpan = document.createElement("span");
+        victimSpan.textContent = payload.player_name_2;
+        victimSpan.classList.add(
+          info.victimTeam === "Axis" ? "player-axis" : "player-allies"
+        );
 
-            const ws = new WebSocket(`ws://${location.host}`);
+        const weaponSpan = document.createElement("span");
+        weaponSpan.textContent = `with ${payload.weapon}`;
+        weaponSpan.classList.add("weapon");
 
-            ws.onmessage = (msg) => {
-                const { type, payload } = JSON.parse(msg.data);
-                if (type === "KILL") {
-                    const time = new Date(payload.timestamp_ms).toLocaleTimeString();
-                    const info = extractTeamsFromMessage(payload.message);
+        entry.append(killerSpan, arrowSpan, victimSpan, weaponSpan);
+        document.getElementById("kill-feed").prepend(entry);
 
-                    const entry = document.createElement("li");
-                    entry.classList.add("kill-entry");
+        // Fade out and remove after ~10 seconds
+        setTimeout(() => {
+          entry.classList.add("fade-out");
 
-                    const killerSpan = document.createElement("span");
-                    killerSpan.textContent = payload.player;
-                    killerSpan.classList.add(info.killerTeam === "Axis" ? "player-axis" : "player-allies");
-
-                    const arrowSpan = document.createElement("span");
-                    arrowSpan.textContent = "→";
-
-                    const victimSpan = document.createElement("span");
-                    victimSpan.textContent = payload.player2;
-                    victimSpan.classList.add(info.victimTeam === "Axis" ? "player-axis" : "player-allies");
-
-                    const weaponSpan = document.createElement("span");
-                    weaponSpan.textContent = `with ${payload.weapon}`;
-                    weaponSpan.classList.add("weapon");
-
-                    const timeSpan = document.createElement("span");
-                    timeSpan.textContent = `[${time}]`;
-                    timeSpan.style.opacity = "0.6";
-
-                    entry.append(timeSpan, killerSpan, arrowSpan, victimSpan, weaponSpan);
-                    document.getElementById("kill-feed").prepend(entry);
-
-                    // Fade out and remove after ~10 seconds
-                    setTimeout(() => {
-                        entry.classList.add("fade-out");
-
-                        // Let the transition render for slightly longer
-                        setTimeout(() => {
-                            entry.remove();
-                        }, 1200);
-                    }, 10000);
-                }
-            };
-        </script>
-    </body>
+          // Let the transition render for slightly longer
+          setTimeout(() => {
+            entry.remove();
+          }, 1200);
+        }, 10000);
+      };
+    </script>
+  </body>
 </html>
