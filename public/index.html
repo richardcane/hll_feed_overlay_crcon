@@ -18,7 +18,7 @@
         };
       }
 
-      const ws = new WebSocket(`ws://${location.host}`);
+      const ws = new WebSocket(`wss://${location.host}`);
       ws.onmessage = (msg) => {
         const { type, payload } = JSON.parse(msg.data);
         if (type !== "KILL") return;
