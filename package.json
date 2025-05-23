@@ -25,5 +25,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10"
   }
 }
